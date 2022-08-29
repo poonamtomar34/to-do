@@ -7,8 +7,14 @@ const feedbaackSchema=mongoose.Schema({
     description:{
         type:String,
     },
-    date:{
-        type:Date
+    startDate:{
+        type:String,
+    },
+    taskStatus:{
+        type: String,
+    },
+    endDate:{
+        type:String,
     }
 })
 module.exports=mongoose.model('feedback',feedbaackSchema)

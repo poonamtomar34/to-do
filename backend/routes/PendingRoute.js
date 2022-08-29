@@ -3,7 +3,7 @@ const { findByIdAndUpdate } = require('../model/PendingShema')
 const router=new express.Router()
 const Post=require('../model/PendingShema')
 
-router.get('/pending', async(req,res)=>{
+router.get('/', async(req,res)=>{
     try{
         const getPost=await Post.find()
         res.send(getPost)
@@ -11,21 +11,23 @@ router.get('/pending', async(req,res)=>{
         res.send(err)
     }
 })
-router.post('/pending', async(req,res)=>{
+router.post('/', async(req,res)=>{
     try{
-        const findTask= await Post.find({taskName:req.body.taskName})
+        const findTask= await Post.find({taskName:req.body.taskName.toLowerCase()})
         console.log(" findTask  ",findTask);
         
-        if (findTask!=0){
-            return res.status(404).json({
+        if (findTask[0].taskName){
+            return res.status(409).json({
                 status:"failed",
                 message:"Enter new task"
             })
         }
         const saveData = new Post({
-            ...req.body,
+            ...req.body.toLowerCase(),
             description: req.body.description,
-            date:req.body.date
+            startDate:req.body.startDate,
+            status:req.body.status,
+            endDate:req.body.endDate
           });
           res.json({
             status: "sucess",
@@ -36,7 +38,7 @@ router.post('/pending', async(req,res)=>{
     }
 })
 
-router.put('/update/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const updatedData = req.body;
@@ -52,4 +54,10 @@ router.put('/update/:id', async (req, res) => {
         res.status(400).json({ message: error.message })
     }
 })
+router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    await Post.deleteOne({ _id: id })
+    res.status(200).send();
+});
+  
 module.exports = router;
